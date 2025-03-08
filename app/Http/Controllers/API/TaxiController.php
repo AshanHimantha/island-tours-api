@@ -13,9 +13,16 @@ class TaxiController extends Controller
     /**
      * Display a listing of taxis.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $taxis = Taxi::all();
+        $query = Taxi::query();
+        
+        // Filter by status if provided
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        $taxis = $query->get();
         
         return response()->json(['data' => $taxis]);
     }
@@ -34,6 +41,7 @@ class TaxiController extends Controller
             'passenger_count' => 'required|integer|min:1',
             'cost_per_day' => 'required|numeric',
             'description' => 'required|string',
+            'status' => 'required|string|in:active,inactive,maintenance,in_tour',
             'display_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -91,6 +99,7 @@ class TaxiController extends Controller
             'passenger_count' => 'sometimes|integer|min:1',
             'cost_per_day' => 'sometimes|numeric',
             'description' => 'sometimes|string',
+            'status' => 'sometimes|string|in:active,inactive,maintenance,in_tour',
             'display_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -130,6 +139,29 @@ class TaxiController extends Controller
         $taxi->update($data);
 
         return response()->json(['message' => 'Taxi updated successfully', 'data' => $taxi]);
+    }
+
+    /**
+     * Update the status of a taxi.
+     */
+    public function updateStatus(Request $request, string $id)
+    {
+        $taxi = Taxi::findOrFail($id);
+        
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string|in:active,inactive,maintenance,in_tour',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $taxi->update(['status' => $request->status]);
+
+        return response()->json([
+            'message' => 'Taxi status updated successfully',
+            'data' => $taxi
+        ]);
     }
 
     /**

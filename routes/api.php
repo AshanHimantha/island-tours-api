@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {      
         Route::post('/register', [AuthController::class, 'register']);
         Route::apiResource('taxis', TaxiController::class)->except(['index', 'show']);
+        Route::put('taxis/{id}/status', [TaxiController::class, 'updateStatus']);
         Route::get('/user', [AuthController::class, 'user']);
     });
     
