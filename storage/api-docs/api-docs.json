@@ -1,0 +1,1610 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Beautiful Island Tours API Documentation",
+        "description": "API documentation for Beautiful Island Tours system",
+        "contact": {
+            "name": "Beautiful Island Tours Support",
+            "email": "ashanhimantha321@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://testapi.ashanhimantha.com",
+            "description": "Beautiful Island Tours API Server"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new admin or staff user",
+                "description": "Register a new user.",
+                "operationId": "a718f172ff3ac464d723835815f8fb57",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "staff"
+                                        ],
+                                        "example": "staff"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "staff"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdefghijklmnopqrstuvwxyz"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login and get authentication token",
+                "description": "Login user and create token.",
+                "operationId": "44212a9096e4b09358281e9ec8a0701d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "staff"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdefghijklmnopqrstuvwxyz"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout and invalidate token",
+                "description": "Logout user (revoke token).",
+                "operationId": "fa8a9f737ac3eeedebed8d1411ed0e7d",
+                "responses": {
+                    "200": {
+                        "description": "Successful logout",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get authenticated user details",
+                "description": "Get authenticated user.",
+                "operationId": "b5e90fe100cd00fd4957f924d70b7db8",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "john@example.com"
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "example": "admin"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/reviews": {
+            "get": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Get list of reviews",
+                "operationId": "a15f7d74fd8a01fc0cba02cc1a871267",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "published",
+                                "pending",
+                                "rejected"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Review"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/taxis": {
+            "get": {
+                "tags": [
+                    "Taxis"
+                ],
+                "summary": "Get list of taxis",
+                "description": "Display a listing of taxis.",
+                "operationId": "e95d9387e56a40e9828c11525ca32616",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter taxis by status",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive",
+                                "maintenance",
+                                "in_tour"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Taxi"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Taxis"
+                ],
+                "summary": "Create new taxi",
+                "description": "Store a newly created taxi in storage.",
+                "operationId": "f2ac4c84aa517493635a1980a52e2b25",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "engine_capacity",
+                                    "kmpl",
+                                    "fuel_type",
+                                    "gear_type",
+                                    "passenger_count",
+                                    "cost_per_day",
+                                    "description",
+                                    "status",
+                                    "display_image"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Toyota Corolla"
+                                    },
+                                    "engine_capacity": {
+                                        "type": "string",
+                                        "example": "1800cc"
+                                    },
+                                    "kmpl": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 14.5
+                                    },
+                                    "fuel_type": {
+                                        "type": "string",
+                                        "example": "Petrol"
+                                    },
+                                    "gear_type": {
+                                        "type": "string",
+                                        "example": "Automatic"
+                                    },
+                                    "passenger_count": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "cost_per_day": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 50
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Comfortable sedan for family trips"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "maintenance",
+                                            "in_tour"
+                                        ],
+                                        "example": "active"
+                                    },
+                                    "display_image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image3": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Taxi created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Taxi created successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Taxi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/taxis/{id}": {
+            "get": {
+                "tags": [
+                    "Taxis"
+                ],
+                "summary": "Get taxi by ID",
+                "description": "Display the specified taxi.",
+                "operationId": "72ad2812b973f81077647f752381d8d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Taxi ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Taxi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Taxi not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Taxis"
+                ],
+                "summary": "Update existing taxi",
+                "description": "Update the specified taxi in storage.",
+                "operationId": "83d19ff37d208c1b5ff39ff380100416",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Taxi ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "engine_capacity": {
+                                        "type": "string"
+                                    },
+                                    "kmpl": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "fuel_type": {
+                                        "type": "string"
+                                    },
+                                    "gear_type": {
+                                        "type": "string"
+                                    },
+                                    "passenger_count": {
+                                        "type": "integer"
+                                    },
+                                    "cost_per_day": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "maintenance",
+                                            "in_tour"
+                                        ]
+                                    },
+                                    "display_image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image3": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "_method": {
+                                        "type": "string",
+                                        "default": "PUT",
+                                        "example": "PUT"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Taxi updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Taxi updated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Taxi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Taxi not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Taxis"
+                ],
+                "summary": "Delete taxi",
+                "description": "Remove the specified taxi from storage.",
+                "operationId": "9517f7c2c4f3c8cc8fb3fd5e6ab63e62",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Taxi ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Taxi deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Taxi deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Taxi not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/taxis/{id}/status": {
+            "put": {
+                "tags": [
+                    "Taxis"
+                ],
+                "summary": "Update taxi status",
+                "description": "Update the status of a taxi.",
+                "operationId": "9b3320f5e114fc971702581d3d921a9a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Taxi ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "maintenance",
+                                            "in_tour"
+                                        ],
+                                        "example": "active"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Taxi status updated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Taxi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Taxi not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tours": {
+            "get": {
+                "tags": [
+                    "Tours"
+                ],
+                "summary": "Get list of tours",
+                "description": "Display a listing of tours.",
+                "operationId": "318f54f987fd4f7d2580af48cadea96c",
+                "parameters": [
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "description": "Filter tours by location",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter tours by status",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "available",
+                                "unavailable",
+                                "booked",
+                                "seasonal"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Tour"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tours"
+                ],
+                "summary": "Create new tour",
+                "description": "Store a newly created tour in storage.",
+                "operationId": "36df17379e2323a9bff99f881e571b1c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "itinerary",
+                                    "include",
+                                    "exclude",
+                                    "per_adult_price",
+                                    "location",
+                                    "status",
+                                    "display_image"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Island Discovery Tour"
+                                    },
+                                    "itinerary": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "Day 1: Beach tour",
+                                            "Day 2: Mountain hiking"
+                                        ]
+                                    },
+                                    "include": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "Hotel pickup",
+                                            "Lunch",
+                                            "Guide"
+                                        ]
+                                    },
+                                    "exclude": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "Drinks",
+                                            "Tips"
+                                        ]
+                                    },
+                                    "per_adult_price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 99.99
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "East Coast"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "available",
+                                            "unavailable",
+                                            "booked",
+                                            "seasonal"
+                                        ],
+                                        "example": "available"
+                                    },
+                                    "display_image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tour created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tour created successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Tour"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tours/{id}": {
+            "get": {
+                "tags": [
+                    "Tours"
+                ],
+                "summary": "Get tour by ID",
+                "description": "Display the specified tour.",
+                "operationId": "be81958a7c9f68ed6b29cec47ed4bc16",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Tour ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Tour"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tour not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tours"
+                ],
+                "summary": "Update existing tour",
+                "description": "Update the specified tour in storage.",
+                "operationId": "0f618398a119bbc4685bef9e332ff905",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Tour ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "itinerary": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "include": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "exclude": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "per_adult_price": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "location": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "available",
+                                            "unavailable",
+                                            "booked",
+                                            "seasonal"
+                                        ]
+                                    },
+                                    "display_image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image1": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "image2": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "_method": {
+                                        "type": "string",
+                                        "default": "PUT",
+                                        "example": "PUT"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tour updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tour updated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Tour"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Tour not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Tours"
+                ],
+                "summary": "Delete tour",
+                "description": "Remove the specified tour from storage.",
+                "operationId": "37ba03de582ba50bed55c6d04398af8f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Tour ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tour deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tour deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tour not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tours/{id}/status": {
+            "put": {
+                "tags": [
+                    "Tours"
+                ],
+                "summary": "Update tour status",
+                "description": "Update the status of a tour.",
+                "operationId": "b6f491fd8ea1dedd3be517c7e4e77e00",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Tour ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "available",
+                                            "unavailable",
+                                            "booked",
+                                            "seasonal"
+                                        ],
+                                        "example": "available"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tour status updated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Tour"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Tour not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Review": {
+                "required": [
+                    "name",
+                    "country",
+                    "rating",
+                    "comment"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "country": {
+                        "type": "string"
+                    },
+                    "rating": {
+                        "type": "integer",
+                        "maximum": 5,
+                        "minimum": 1
+                    },
+                    "comment": {
+                        "type": "string"
+                    },
+                    "image": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "published",
+                            "pending",
+                            "rejected"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Taxi": {
+                "required": [
+                    "title",
+                    "engine_capacity",
+                    "kmpl",
+                    "fuel_type",
+                    "gear_type",
+                    "passenger_count",
+                    "cost_per_day"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "engine_capacity": {
+                        "type": "string"
+                    },
+                    "kmpl": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "fuel_type": {
+                        "type": "string"
+                    },
+                    "gear_type": {
+                        "type": "string"
+                    },
+                    "passenger_count": {
+                        "type": "integer"
+                    },
+                    "cost_per_day": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive",
+                            "maintenance",
+                            "in_tour"
+                        ]
+                    },
+                    "display_image": {
+                        "type": "string"
+                    },
+                    "image1": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "image2": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "image3": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Tour": {
+                "required": [
+                    "title",
+                    "itinerary",
+                    "include",
+                    "exclude",
+                    "per_adult_price",
+                    "location"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "itinerary": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "include": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "exclude": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "per_adult_price": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "available",
+                            "unavailable",
+                            "booked",
+                            "seasonal"
+                        ]
+                    },
+                    "display_image": {
+                        "type": "string"
+                    },
+                    "image1": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "image2": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "admin",
+                            "staff"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "API Endpoints for user authentication and management"
+        },
+        {
+            "name": "Reviews",
+            "description": "API Endpoints for Reviews"
+        },
+        {
+            "name": "Taxis",
+            "description": "API Endpoints for managing taxis"
+        },
+        {
+            "name": "Tours",
+            "description": "API Endpoints for managing tours"
+        }
+    ]
+}

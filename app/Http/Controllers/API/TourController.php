@@ -8,10 +8,46 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Tours",
+ *     description="API Endpoints for managing tours"
+ * )
+ */
 class TourController extends Controller
 {
     /**
      * Display a listing of tours.
+     * 
+     * @OA\Get(
+     *     path="/api/tours",
+     *     tags={"Tours"},
+     *     summary="Get list of tours",
+     *     @OA\Parameter(
+     *         name="location",
+     *         in="query",
+     *         description="Filter tours by location",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter tours by status",
+     *         @OA\Schema(type="string", enum={"available", "unavailable", "booked", "seasonal"})
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Tour")
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function index(Request $request)
     {
@@ -34,6 +70,71 @@ class TourController extends Controller
 
     /**
      * Store a newly created tour in storage.
+     * 
+     * @OA\Post(
+     *     path="/api/tours",
+     *     tags={"Tours"},
+     *     summary="Create new tour",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"title","itinerary","include","exclude","per_adult_price","location","status","display_image"},
+     *                 @OA\Property(property="title", type="string", example="Island Discovery Tour"),
+     *                 @OA\Property(
+     *                     property="itinerary", 
+     *                     type="array", 
+     *                     @OA\Items(type="string"),
+     *                     example={"Day 1: Beach tour", "Day 2: Mountain hiking"}
+     *                 ),
+     *                 @OA\Property(
+     *                     property="include", 
+     *                     type="array", 
+     *                     @OA\Items(type="string"),
+     *                     example={"Hotel pickup", "Lunch", "Guide"}
+     *                 ),
+     *                 @OA\Property(
+     *                     property="exclude", 
+     *                     type="array", 
+     *                     @OA\Items(type="string"),
+     *                     example={"Drinks", "Tips"}
+     *                 ),
+     *                 @OA\Property(property="per_adult_price", type="number", format="float", example=99.99),
+     *                 @OA\Property(property="location", type="string", example="East Coast"),
+     *                 @OA\Property(property="status", type="string", enum={"available", "unavailable", "booked", "seasonal"}, example="available"),
+     *                 @OA\Property(property="display_image", type="string", format="binary"),
+     *                 @OA\Property(property="image1", type="string", format="binary"),
+     *                 @OA\Property(property="image2", type="string", format="binary")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Tour created successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Tour created successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Tour")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -87,6 +188,34 @@ class TourController extends Controller
 
     /**
      * Display the specified tour.
+     * 
+     * @OA\Get(
+     *     path="/api/tours/{id}",
+     *     tags={"Tours"},
+     *     summary="Get tour by ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Tour ID",
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 ref="#/components/schemas/Tour"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tour not found"
+     *     )
+     * )
      */
     public function show(string $id)
     {
@@ -102,6 +231,72 @@ class TourController extends Controller
 
     /**
      * Update the specified tour in storage.
+     * 
+     * @OA\Post(
+     *     path="/api/tours/{id}",
+     *     tags={"Tours"},
+     *     summary="Update existing tour",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Tour ID",
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="title", type="string"),
+     *                 @OA\Property(
+     *                     property="itinerary", 
+     *                     type="array", 
+     *                     @OA\Items(type="string")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="include", 
+     *                     type="array", 
+     *                     @OA\Items(type="string")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="exclude", 
+     *                     type="array", 
+     *                     @OA\Items(type="string")
+     *                 ),
+     *                 @OA\Property(property="per_adult_price", type="number", format="float"),
+     *                 @OA\Property(property="location", type="string"),
+     *                 @OA\Property(property="status", type="string", enum={"available", "unavailable", "booked", "seasonal"}),
+     *                 @OA\Property(property="display_image", type="string", format="binary"),
+     *                 @OA\Property(property="image1", type="string", format="binary"),
+     *                 @OA\Property(property="image2", type="string", format="binary"),
+     *                 @OA\Property(property="_method", type="string", default="PUT", example="PUT")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tour updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Tour updated successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Tour")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tour not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -178,6 +373,52 @@ class TourController extends Controller
 
     /**
      * Update the status of a tour.
+     * 
+     * @OA\Put(
+     *     path="/api/tours/{id}/status",
+     *     tags={"Tours"},
+     *     summary="Update tour status",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Tour ID",
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status",
+     *                 type="string",
+     *                 enum={"available", "unavailable", "booked", "seasonal"},
+     *                 example="available"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Status updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Tour status updated successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Tour")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tour not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
      */
     public function updateStatus(Request $request, string $id)
     {
@@ -201,6 +442,36 @@ class TourController extends Controller
 
     /**
      * Remove the specified tour from storage.
+     * 
+     * @OA\Delete(
+     *     path="/api/tours/{id}",
+     *     tags={"Tours"},
+     *     summary="Delete tour",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Tour ID",
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tour deleted successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Tour deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tour not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
      */
     public function destroy(string $id)
     {

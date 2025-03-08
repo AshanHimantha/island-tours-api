@@ -9,8 +9,64 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * @OA\Tag(
+ *     name="Authentication",
+ *     description="API Endpoints for user authentication and management"
+ * )
+ */
 class AuthController extends Controller
 {
+    /**
+     * Register a new user.
+     * 
+     * @OA\Post(
+     *     path="/api/register",
+     *     tags={"Authentication"},
+     *     summary="Register a new admin or staff user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password","password_confirmation","role"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123"),
+     *             @OA\Property(property="role", type="string", enum={"admin", "staff"}, example="staff")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User registered successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="email", type="string", example="john@example.com"),
+     *                 @OA\Property(property="role", type="string", example="staff"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             ),
+     *             @OA\Property(property="token", type="string", example="1|abcdefghijklmnopqrstuvwxyz")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -35,6 +91,48 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * Login user and create token.
+     * 
+     * @OA\Post(
+     *     path="/api/login",
+     *     tags={"Authentication"},
+     *     summary="Login and get authentication token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="email", type="string", example="john@example.com"),
+     *                 @OA\Property(property="role", type="string", example="staff"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             ),
+     *             @OA\Property(property="token", type="string", example="1|abcdefghijklmnopqrstuvwxyz")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -57,6 +155,28 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Logout user (revoke token).
+     * 
+     * @OA\Get(
+     *     path="/api/logout",
+     *     tags={"Authentication"},
+     *     summary="Logout and invalidate token",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful logout",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Logged out successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -66,6 +186,33 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Get authenticated user.
+     * 
+     * @OA\Get(
+     *     path="/api/user",
+     *     tags={"Authentication"},
+     *     summary="Get authenticated user details",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", example="john@example.com"),
+     *             @OA\Property(property="role", type="string", example="admin"),
+     *             @OA\Property(property="created_at", type="string", format="date-time"),
+     *             @OA\Property(property="updated_at", type="string", format="date-time")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     */
     public function user(Request $request)
     {
         return response()->json($request->user());
