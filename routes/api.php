@@ -3,12 +3,15 @@
 use App\Http\Controllers\API\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TaxiController;
+use App\Http\Controllers\API\TourController;
 
 // Public routes
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('taxis', [TaxiController::class, 'index']);
 Route::get('taxis/{taxi}', [TaxiController::class, 'show']);
+Route::get('tours', [TourController::class, 'index']);
+Route::get('tours/{tour}', [TourController::class, 'show']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -21,6 +24,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('taxis', TaxiController::class)->except(['index', 'show']);
         Route::put('taxis/{id}/status', [TaxiController::class, 'updateStatus']);
         Route::get('/user', [AuthController::class, 'user']);
+        Route::apiResource('tours', TourController::class)->except(['index', 'show']);
+        Route::put('tours/{id}/status', [TourController::class, 'updateStatus']);
     });
     
     // Staff and admin routes
