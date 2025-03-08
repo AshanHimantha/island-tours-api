@@ -1,11 +1,11 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Beautiful Island Tours API Documentation",
-        "description": "API documentation for Beautiful Island Tours system",
+        "title": "Island Tours API Documentation",
+        "description": "API documentation for Island Tours system",
         "contact": {
-            "name": "Beautiful Island Tours Support",
-            "email": "ashanhimantha321@gmail.com"
+            "name": "Island Tours Support",
+            "email": "admin@islandtours.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -15,8 +15,8 @@
     },
     "servers": [
         {
-            "url": "https://testapi.ashanhimantha.com",
-            "description": "Beautiful Island Tours API Server"
+            "url": "http://my-default-host.com",
+            "description": "Island Tours API Server"
         }
     ],
     "paths": {
