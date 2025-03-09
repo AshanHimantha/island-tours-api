@@ -19,6 +19,7 @@ class ReviewController extends Controller
     /**
      * @OA\Get(
      *     path="/api/reviews",
+     *     operationId="getReviews",
      *     tags={"Reviews"},
      *     summary="Get list of reviews",
      *     @OA\Parameter(
@@ -26,6 +27,18 @@ class ReviewController extends Controller
      *         in="query",
      *         description="Filter by status",
      *         @OA\Schema(type="string", enum={"published", "pending", "rejected"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="rating",
+     *         in="query",
+     *         description="Filter by rating (1-5)",
+     *         @OA\Schema(type="integer", minimum=1, maximum=5)
+     *     ),
+     *     @OA\Parameter(
+     *         name="country",
+     *         in="query",
+     *         description="Filter by country",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -69,7 +82,38 @@ class ReviewController extends Controller
     }
 
     /**
-     * Store a newly created review in storage.
+     * @OA\Post(
+     *     path="/api/reviews",
+     *     operationId="storeReview",
+     *     tags={"Reviews"},
+     *     summary="Create a new review",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "country", "rating", "comment"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="country", type="string", example="United States"),
+     *             @OA\Property(property="rating", type="integer", example=5),
+     *             @OA\Property(property="comment", type="string", example="Great experience, highly recommended!"),
+     *             @OA\Property(property="status", type="string", enum={"published", "pending", "rejected"}, example="pending"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Review created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review created successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -105,7 +149,30 @@ class ReviewController extends Controller
     }
 
     /**
-     * Display the specified review.
+     * @OA\Get(
+     *     path="/api/reviews/{id}",
+     *     operationId="getReviewById",
+     *     tags={"Reviews"},
+     *     summary="Get review details",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Review ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", ref="#/components/schemas/Review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review not found"
+     *     )
+     * )
      */
     public function show(string $id)
     {
@@ -115,7 +182,53 @@ class ReviewController extends Controller
     }
 
     /**
-     * Update the specified review in storage.
+     * @OA\Put(
+     *     path="/api/reviews/{id}",
+     *     operationId="updateReview",
+     *     tags={"Reviews"},
+     *     summary="Update an existing review",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Review ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="country", type="string", example="United States"),
+     *             @OA\Property(property="rating", type="integer", example=5),
+     *             @OA\Property(property="comment", type="string", example="Great experience, highly recommended!"),
+     *             @OA\Property(property="status", type="string", enum={"published", "pending", "rejected"}, example="published")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Review updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review updated successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -153,7 +266,50 @@ class ReviewController extends Controller
     }
 
     /**
-     * Update the status of a review.
+     * @OA\Patch(
+     *     path="/api/reviews/{id}/status",
+     *     operationId="updateReviewStatus",
+     *     tags={"Reviews"},
+     *     summary="Update the status of a review",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Review ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"status"},
+     *             @OA\Property(property="status", type="string", enum={"published", "pending", "rejected"}, example="published")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Review status updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review status updated successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Review")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function updateStatus(Request $request, string $id)
     {
@@ -176,7 +332,35 @@ class ReviewController extends Controller
     }
 
     /**
-     * Remove the specified review from storage.
+     * @OA\Delete(
+     *     path="/api/reviews/{id}",
+     *     operationId="deleteReview",
+     *     tags={"Reviews"},
+     *     summary="Delete a review",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Review ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Review deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Review not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function destroy(string $id)
     {
@@ -193,7 +377,24 @@ class ReviewController extends Controller
     }
     
     /**
-     * Get featured reviews (highest rated and published).
+     * @OA\Get(
+     *     path="/api/reviews/featured",
+     *     operationId="getFeaturedReviews",
+     *     tags={"Reviews"},
+     *     summary="Get featured reviews (4-5 stars and published)",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Review")
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function featured()
     {

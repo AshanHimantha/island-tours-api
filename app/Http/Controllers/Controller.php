@@ -1,5 +1,32 @@
 <?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
+
 /**
+ * @OA\Info(
+ *     version="1.0.0",
+ *     title="Island Tours API Documentation",
+ *     description="API documentation for Island Tours system",
+ *     @OA\Contact(
+ *         email="admin@islandtours.com",
+ *         name="Island Tours Support"
+ *     ),
+ *     @OA\License(
+ *         name="Apache 2.0",
+ *         url="http://www.apache.org/licenses/LICENSE-2.0.html"
+ *     )
+ * )
+ * 
+ * @OA\Server(
+ *     url=L5_SWAGGER_CONST_HOST,
+ *     description="Island Tours API Server"
+ * )
+ * 
  * @OA\SecurityScheme(
  *     type="http",
  *     scheme="bearer",
@@ -7,10 +34,7 @@
  *     bearerFormat="JWT"
  * )
  */
-
-namespace App\Http\Controllers;
-
-abstract class Controller
+class Controller extends BaseController
 {
-    //
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }

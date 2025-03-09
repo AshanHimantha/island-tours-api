@@ -21,6 +21,7 @@ class PlanTourController extends Controller
      *     path="/api/tour-plans",
      *     operationId="getTourPlans",
      *     tags={"Tour Plans"},
+     *     security={{"bearerAuth":{}}},
      *     summary="Get list of tour plans",
      *     @OA\Parameter(
      *         name="status",
@@ -35,6 +36,13 @@ class PlanTourController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/TourPlan"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
      *     )
      * )
@@ -61,7 +69,7 @@ class PlanTourController extends Controller
      *     path="/api/tour-plans",
      *     operationId="storeTourPlan",
      *     tags={"Tour Plans"},
-     *     summary="Create a new tour plan",
+     *     summary="Create a new tour plan (Public endpoint)",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -138,6 +146,7 @@ class PlanTourController extends Controller
      *     path="/api/tour-plans/{id}",
      *     operationId="getTourPlanById",
      *     tags={"Tour Plans"},
+     *     security={{"bearerAuth":{}}},
      *     summary="Get tour plan details",
      *     @OA\Parameter(
      *         name="id",
@@ -159,6 +168,13 @@ class PlanTourController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Tour plan not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
      *     )
      * )
@@ -185,6 +201,7 @@ class PlanTourController extends Controller
      *     path="/api/tour-plans/{id}",
      *     operationId="updateTourPlan",
      *     tags={"Tour Plans"},
+     *     security={{"bearerAuth":{}}},
      *     summary="Update an existing tour plan",
      *     @OA\Parameter(
      *         name="id",
@@ -225,6 +242,13 @@ class PlanTourController extends Controller
      *     @OA\Response(
      *         response=422,
      *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
      *     )
      * )
      */
@@ -276,6 +300,7 @@ class PlanTourController extends Controller
      *     path="/api/tour-plans/{id}",
      *     operationId="deleteTourPlan",
      *     tags={"Tour Plans"},
+     *     security={{"bearerAuth":{}}},
      *     summary="Delete a tour plan",
      *     @OA\Parameter(
      *         name="id",
@@ -294,6 +319,13 @@ class PlanTourController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Tour plan not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
      *     )
      * )
      */
@@ -313,6 +345,153 @@ class PlanTourController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Tour plan deleted successfully'
+        ]);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/tour-plans/search",
+     *     operationId="searchTourPlans",
+     *     tags={"Tour Plans"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Search tour plans with advanced filters",
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="Filter by requester name",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="identification_number",
+     *         in="query",
+     *         description="Filter by passport/ID number",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="contact_number",
+     *         in="query",
+     *         description="Filter by contact number",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="whatsapp_number",
+     *         in="query",
+     *         description="Filter by whatsapp number",
+     *         required=false,
+     *         @OA\Schema(type="string", nullable=true)
+     *     ),
+     *     @OA\Parameter(
+     *         name="adult_count",
+     *         in="query",
+     *         description="Filter by number of adults",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="kids_count",
+     *         in="query",
+     *         description="Filter by number of kids",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="date_from",
+     *         in="query",
+     *         description="Filter by tour date from (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="date_to",
+     *         in="query",
+     *         description="Filter by tour date to (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by status",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"pending", "confirmed", "completed", "cancelled"})
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/TourPlan"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     )
+     * )
+     */
+    public function search(Request $request)
+    {
+        $query = TourPlan::query()->with(['tour', 'vehicle']);
+        
+        // Filter by requester name
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('requester_name', 'like', '%' . $request->name . '%');
+        }
+        
+        // Filter by identification number (passport/ID)
+        if ($request->has('identification_number') && !empty($request->identification_number)) {
+            $query->where('requester_id_passport', 'like', '%' . $request->identification_number . '%');
+        }
+        
+        // Filter by contact number
+        if ($request->has('contact_number') && !empty($request->contact_number)) {
+            $query->where('contact_number', 'like', '%' . $request->contact_number . '%');
+        }
+        
+        // Filter by WhatsApp number
+        if ($request->has('whatsapp_number') && !empty($request->whatsapp_number)) {
+            $query->where('whatsapp', 'like', '%' . $request->whatsapp_number . '%');
+        }
+        
+        // Filter by adult count
+        if ($request->has('adult_count') && is_numeric($request->adult_count)) {
+            $query->where('adult_count', $request->adult_count);
+        }
+        
+        // Filter by kids count
+        if ($request->has('kids_count') && is_numeric($request->kids_count)) {
+            $query->where('kids_count', $request->kids_count);
+        }
+        
+        // Filter by date range
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('tour_date', '>=', $request->date_from);
+        }
+        
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('tour_date', '<=', $request->date_to);
+        }
+        
+        // Filter by status (handle both canceled and cancelled spellings)
+        if ($request->has('status') && !empty($request->status)) {
+            $status = $request->status;
+            if ($status === 'cancelled') {
+                $status = 'canceled';
+            }
+            $query->where('status', $status);
+        }
+        
+        $tourPlans = $query->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $tourPlans
         ]);
     }
 }
