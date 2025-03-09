@@ -46,4 +46,12 @@ class Tour extends Model
         'image1',
         'image2',
     ];
+    
+    /**
+     * Get the tour plans for this tour.
+     */
+    public function tourPlans()
+    {
+        return $this->hasMany(TourPlan::class);
+    }
 }

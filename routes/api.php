@@ -12,6 +12,7 @@
  */
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PlanTourController;
 use App\Http\Controllers\API\RequestTaxiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TaxiController;
@@ -30,6 +31,7 @@ Route::get('reviews', [ReviewController::class, 'index']);
 Route::post('reviews', [ReviewController::class, 'store']);
 Route::get('reviews/featured/list', [ReviewController::class, 'featured']);
 Route::post('taxi-requests', [RequestTaxiController::class, 'store']);
+Route::post('tour-plans', [PlanTourController::class, 'store']);
 
 
 // Protected routes
@@ -49,7 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('reviews', ReviewController::class)->except(['index', 'store']);
         Route::put('reviews/{id}/status', [ReviewController::class, 'updateStatus']);
         Route::apiResource('taxi-requests', RequestTaxiController::class)->except(['store']);
-   
+        Route::apiResource('tour-plans', PlanTourController::class)->except(['store']);
+
     });
 
     // Staff and admin routes
