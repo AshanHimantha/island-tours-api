@@ -12,10 +12,12 @@
  */
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\RequestTaxiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TaxiController;
 use App\Http\Controllers\API\TourController;
 use App\Http\Controllers\API\ReviewController;
+
 
 // Public routes
 
@@ -27,15 +29,17 @@ Route::get('tours/{tour}', [TourController::class, 'show']);
 Route::get('reviews', [ReviewController::class, 'index']);
 Route::post('reviews', [ReviewController::class, 'store']);
 Route::get('reviews/featured/list', [ReviewController::class, 'featured']);
+Route::post('taxi-requests', [RequestTaxiController::class, 'store']);
 
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
-    
-    
+
+
     // Admin only routes
-    Route::middleware('role:admin')->group(function () {      
+    Route::middleware('role:admin')->group(function () {
+
         Route::post('/register', [AuthController::class, 'register']);
         Route::apiResource('taxis', TaxiController::class)->except(['index', 'show']);
         Route::put('taxis/{id}/status', [TaxiController::class, 'updateStatus']);
@@ -44,16 +48,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('tours/{id}/status', [TourController::class, 'updateStatus']);
         Route::apiResource('reviews', ReviewController::class)->except(['index', 'store']);
         Route::put('reviews/{id}/status', [ReviewController::class, 'updateStatus']);
+        Route::apiResource('taxi-requests', RequestTaxiController::class)->except(['store']);
+   
     });
-    
+
     // Staff and admin routes
-    Route::middleware('role:admin,staff')->group(function () {
-       
-
-    
-
-    });
+    Route::middleware('role:admin,staff')->group(function () {});
 });
-
-
-
