@@ -14,10 +14,12 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PlanTourController;
 use App\Http\Controllers\API\RequestTaxiController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TaxiController;
 use App\Http\Controllers\API\TourController;
 use App\Http\Controllers\API\ReviewController;
+use Illuminate\Support\Facades\Storage;
 
 
 // Public routes
@@ -33,6 +35,10 @@ Route::get('reviews/featured/list', [ReviewController::class, 'featured']);
 Route::post('taxi-requests', [RequestTaxiController::class, 'store']);
 Route::post('tour-plans', [PlanTourController::class, 'store']);
 
+Route::get('create-storage-link', function () {
+    Artisan::call('storage:link');
+    return response()->json(['message' => 'Storage link created successfully']);
+});
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
