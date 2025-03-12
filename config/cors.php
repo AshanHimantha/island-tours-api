@@ -19,16 +19,16 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], // Update with your frontend domain in production
+    'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173')),
 
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => ['*'],  // Add this to expose headers
 
     'max_age' => 0,
 
-    'supports_credentials' => true, // This is important for cookies
+    'supports_credentials' => true,  // Critical for cookie auth
 
 ];

@@ -129,34 +129,41 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
+    
         if (!Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
-
+    
         $user = $request->user();
         
         // Create a token string manually
         $token = $user->createToken('auth_token')->plainTextToken;
         
-        // Return the user with HTTP-only cookie that expires in 1 hour
+        // Determine proper cookie settings based on environment
+        $isProduction = config('app.env') === 'production';
+        $sameSite = $isProduction ? 'lax' : 'none';
+        
+        // Important: When SameSite=None, Secure MUST be true (even in development)
+        $secure = $isProduction || $sameSite === 'none';
+        
+        // Return both token in response AND set cookie
         return response()->json([
             'user' => $user,
+            'token' => $token // Include token in response for development fallback
         ])->cookie(
             'auth_token',         // Cookie name
             $token,               // Cookie value
             60,                   // Expiration (60 minutes = 1 hour)
             '/',                  // Path
             null,                 // Domain (null = current domain)
-            config('app.env') === 'production', // Secure (HTTPS only in production)
+            $secure,              // Secure must be true when SameSite=None
             true,                 // HTTP only
             false,                // Raw
-            'strict'              // SameSite policy
+            $sameSite             // SameSite policy
         );
     }
-
     /**
      * Logout user (revoke token).
      * 
@@ -193,7 +200,7 @@ class AuthController extends Controller
             config('app.env') === 'production', // Secure
             true,             // HTTP only
             false,            // Raw
-            'strict'          // SameSite policy
+            'lax'             // SameSite policy - changed from 'strict' to 'lax'
         );
     }
 
