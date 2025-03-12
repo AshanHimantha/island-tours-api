@@ -49,7 +49,7 @@ class AuthController extends Controller
      *                 @OA\Property(property="created_at", type="string", format="date-time"),
      *                 @OA\Property(property="updated_at", type="string", format="date-time")
      *             ),
-     *             @OA\Property(property="token", type="string", example="1|abcdefghijklmnopqrstuvwxyz")
+     *             @OA\Property(property="message", type="string", example="User registered successfully")
      *         )
      *     ),
      *     @OA\Response(
@@ -83,21 +83,19 @@ class AuthController extends Controller
             'role' => $request->role,
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'user' => $user,
-            'token' => $token,
+            'message' => 'User registered successfully',
         ], 201);
     }
 
     /**
-     * Login user and create token.
+     * Login user and create session with HTTP cookie.
      * 
      * @OA\Post(
      *     path="/api/login",
      *     tags={"Authentication"},
-     *     summary="Login and get authentication token",
+     *     summary="Login and create authentication cookie",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -115,21 +113,13 @@ class AuthController extends Controller
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="name", type="string", example="John Doe"),
      *                 @OA\Property(property="email", type="string", example="john@example.com"),
-     *                 @OA\Property(property="role", type="string", example="staff"),
-     *                 @OA\Property(property="created_at", type="string", format="date-time"),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time")
-     *             ),
-     *             @OA\Property(property="token", type="string", example="1|abcdefghijklmnopqrstuvwxyz")
+     *                 @OA\Property(property="role", type="string", example="staff")
+     *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(property="errors", type="object")
-     *         )
+     *         description="Validation error"
      *     )
      * )
      */
@@ -147,12 +137,24 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
+        
+        // Create a token string manually
         $token = $user->createToken('auth_token')->plainTextToken;
-
+        
+        // Return the user with HTTP-only cookie that expires in 1 hour
         return response()->json([
             'user' => $user,
-            'token' => $token,
-        ]);
+        ])->cookie(
+            'auth_token',         // Cookie name
+            $token,               // Cookie value
+            60,                   // Expiration (60 minutes = 1 hour)
+            '/',                  // Path
+            null,                 // Domain (null = current domain)
+            config('app.env') === 'production', // Secure (HTTPS only in production)
+            true,                 // HTTP only
+            false,                // Raw
+            'strict'              // SameSite policy
+        );
     }
 
     /**
@@ -161,7 +163,7 @@ class AuthController extends Controller
      * @OA\Get(
      *     path="/api/logout",
      *     tags={"Authentication"},
-     *     summary="Logout and invalidate token",
+     *     summary="Logout and invalidate cookie",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
@@ -170,20 +172,29 @@ class AuthController extends Controller
      *             type="object",
      *             @OA\Property(property="message", type="string", example="Logged out successfully")
      *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
      *     )
      * )
      */
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // Delete the current token from the database
+        if ($request->user()) {
+            $request->user()->tokens()->delete();
+        }
         
         return response()->json([
             'message' => 'Logged out successfully',
-        ]);
+        ])->cookie(
+            'auth_token',     // Cookie name
+            '',               // Empty value
+            -1,               // Expire immediately
+            '/',              // Path
+            null,             // Domain
+            config('app.env') === 'production', // Secure
+            true,             // HTTP only
+            false,            // Raw
+            'strict'          // SameSite policy
+        );
     }
 
     /**
@@ -215,6 +226,37 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
+        // Return the authenticated user
         return response()->json($request->user());
+    }
+    
+    /**
+     * Verify if the user is authenticated.
+     * 
+     * @OA\Get(
+     *     path="/api/verify",
+     *     tags={"Authentication"},
+     *     summary="Verify if user is authenticated",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User is authenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="authenticated", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="User is not authenticated"
+     *     )
+     * )
+     */
+    public function verify(Request $request)
+    {
+        return response()->json([
+            'authenticated' => true,
+            'user' => $request->user()
+        ]);
     }
 }
