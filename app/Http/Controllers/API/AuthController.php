@@ -217,4 +217,42 @@ class AuthController extends Controller
     {
         return response()->json($request->user());
     }
+
+    /**
+     * Verify if user is authenticated.
+     * 
+     * @OA\Get(
+     *     path="/api/verify",
+     *     tags={"Authentication"},
+     *     summary="Verify if user is authenticated",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User is authenticated",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="authenticated", type="boolean", example=true),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="email", type="string", example="john@example.com"),
+     *                 @OA\Property(property="role", type="string", example="admin"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="User is not authenticated"
+     *     )
+     * )
+     */
+    public function verify(Request $request)
+    {
+        return response()->json([
+            'authenticated' => true,
+            'user' => $request->user()
+        ]);
+    }
 }

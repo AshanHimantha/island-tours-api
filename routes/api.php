@@ -43,7 +43,7 @@ Route::get('create-storage-link', function () {
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
-
+    Route::get('/verify', [AuthController::class, 'verify']);
 
     // Admin only routes
     Route::middleware('role:admin')->group(function () {
