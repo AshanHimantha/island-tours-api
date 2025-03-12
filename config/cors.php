@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], // Update with your frontend domain in production
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +29,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true, // This is important for cookies
+    'supports_credentials' => true,
 
 ];

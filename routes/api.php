@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 
 // Public routes
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 Route::get('taxis', [TaxiController::class, 'index']);
 Route::get('taxis/{taxi}', [TaxiController::class, 'show']);
 Route::get('tours', [TourController::class, 'index']);
@@ -40,20 +40,14 @@ Route::get('create-storage-link', function () {
     return response()->json(['message' => 'Storage link created successfully']);
 });
 
-Route::get('clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('view:clear');
-    return response()->json(['message' => 'All caches cleared successfully']);
-});
-
-// Cookie-authenticated routes
-Route::middleware(['auth.cookie'])->group(function () {
+// Protected routes
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
-    Route::get('/verify', [AuthController::class, 'verify']);
+
 
     // Admin only routes
     Route::middleware('role:admin')->group(function () {
+
         Route::post('/register', [AuthController::class, 'register']);
         Route::apiResource('taxis', TaxiController::class)->except(['index', 'show']);
         Route::put('taxis/{id}/status', [TaxiController::class, 'updateStatus']);
@@ -64,6 +58,7 @@ Route::middleware(['auth.cookie'])->group(function () {
         Route::put('reviews/{id}/status', [ReviewController::class, 'updateStatus']);
         Route::apiResource('taxi-requests', RequestTaxiController::class)->except(['store']);
         Route::apiResource('tour-plans', PlanTourController::class)->except(['store']);
+
     });
 
     // Staff and admin routes

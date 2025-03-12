@@ -14,7 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Register your named middleware
         $middleware->alias([
-            'auth.cookie' => \App\Http\Middleware\HttpOnlyCookieAuth::class,
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
