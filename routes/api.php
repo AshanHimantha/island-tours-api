@@ -32,7 +32,7 @@ Route::get('tours/{tour}', [TourController::class, 'show']);
 Route::get('reviews', [ReviewController::class, 'index']);
 Route::post('reviews', [ReviewController::class, 'store']);
 Route::get('reviews/featured/list', [ReviewController::class, 'featured']);
-Route::post('requests-taxi', [RequestTaxiController::class, 'store']);
+Route::post('taxi-requests', [RequestTaxiController::class, 'store']);
 Route::post('tour-plans', [PlanTourController::class, 'store']);
 
 Route::get('create-storage-link', function () {
