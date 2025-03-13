@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="date_from", type="string", format="date", example="2025-03-10", description="Start date"),
  *     @OA\Property(property="date_to", type="string", format="date", example="2025-03-15", description="End date"),
  *     @OA\Property(property="status", type="string", example="pending", description="Request status"),
+ *     @OA\Property(property="taxi_id", type="integer", example=1, description="ID of the requested taxi"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2025-03-09T12:00:00Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-03-09T12:00:00Z")
  * )
@@ -38,11 +39,20 @@ class RequestTaxi extends Model
         'kids_count',
         'date_from',
         'date_to',
-        'status'
+        'status',
+        'taxi_id',
     ];
 
     protected $casts = [
         'date_from' => 'date',
         'date_to' => 'date',
     ];
+    
+    /**
+     * Get the taxi that was requested.
+     */
+    public function taxi()
+    {
+        return $this->belongsTo(Taxi::class);
+    }
 }

@@ -76,7 +76,8 @@ class RequestTaxiController extends Controller
      *             @OA\Property(property="adult_count", type="integer", example=2, description="Number of adults"),
      *             @OA\Property(property="kids_count", type="integer", example=1, description="Number of children"),
      *             @OA\Property(property="date_from", type="string", format="date", example="2025-03-15", description="Start date"),
-     *             @OA\Property(property="date_to", type="string", format="date", example="2025-03-20", description="End date")
+     *             @OA\Property(property="date_to", type="string", format="date", example="2025-03-20", description="End date"),
+     *             @OA\Property(property="taxi_id", type="integer", example=1, description="ID of the taxi to request")
      *         )
      *     ),
      *     @OA\Response(
@@ -125,6 +126,7 @@ class RequestTaxiController extends Controller
             'date_from' => 'required|date',
             'date_to' => 'required|date|after_or_equal:date_from',
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+            'taxi_id' => 'required|integer|exists:taxis,id',
         ]);
 
         if ($validator->fails()) {
@@ -273,6 +275,7 @@ class RequestTaxiController extends Controller
             'date_from' => 'sometimes|date',
             'date_to' => 'sometimes|date|after_or_equal:date_from',
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+            'taxi_id' => 'sometimes|integer|exists:taxis,id',
         ]);
 
         if ($validator->fails()) {
