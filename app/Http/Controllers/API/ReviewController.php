@@ -81,6 +81,13 @@ class ReviewController extends Controller
         return response()->json(['data' => $reviews]);
     }
 
+
+    public function getAllReviews()
+{
+    $reviews = Review::latest()->get();
+    return response()->json(['data' => $reviews]);
+}
+
     /**
      * @OA\Post(
      *     path="/api/reviews",
