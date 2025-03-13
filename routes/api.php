@@ -40,6 +40,15 @@ Route::get('create-storage-link', function () {
     return response()->json(['message' => 'Storage link created successfully']);
 });
 
+Route::get('clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('view:clear');
+    return response()->json(['message' => 'All caches cleared successfully']);
+});
+
+
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
