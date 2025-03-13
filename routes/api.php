@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\TaxiController;
 use App\Http\Controllers\API\TourController;
 use App\Http\Controllers\API\ReviewController;
-use Illuminate\Support\Facades\Storage;
+
 
 
 // Public routes
@@ -32,7 +32,7 @@ Route::get('tours/{tour}', [TourController::class, 'show']);
 Route::get('reviews', [ReviewController::class, 'index']);
 Route::post('reviews', [ReviewController::class, 'store']);
 Route::get('reviews/featured/list', [ReviewController::class, 'featured']);
-Route::post('taxi-requests', [RequestTaxiController::class, 'store']);
+Route::post('requests-taxi', [RequestTaxiController::class, 'store']);
 Route::post('tour-plans', [PlanTourController::class, 'store']);
 
 Route::get('create-storage-link', function () {
