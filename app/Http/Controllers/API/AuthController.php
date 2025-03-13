@@ -239,7 +239,9 @@ class AuthController extends Controller
      *                 @OA\Property(property="role", type="string", example="admin"),
      *                 @OA\Property(property="created_at", type="string", format="date-time"),
      *                 @OA\Property(property="updated_at", type="string", format="date-time")
-     *             )
+     *             ),
+     *             @OA\Property(property="token_expires_at", type="string", format="date-time"),
+     *             @OA\Property(property="token_expires_in_minutes", type="integer", example=60)
      *         )
      *     ),
      *     @OA\Response(
@@ -250,9 +252,21 @@ class AuthController extends Controller
      */
     public function verify(Request $request)
     {
+        // Get current token
+        $token = $request->user()->currentAccessToken();
+        
+        // Update token's last_used_at to refresh its expiration time
+        $token->forceFill(['last_used_at' => now()])->save();
+        
+        // Calculate expiration based on last_used_at instead of created_at
+        $tokenExpiration = $token->last_used_at->addMinutes(config('sanctum.expiration', 60));
+        $minutesRemaining = now()->diffInMinutes($tokenExpiration, false);
+        
         return response()->json([
             'authenticated' => true,
-            'user' => $request->user()
+            'user' => $request->user(),
+            'token_expires_at' => $tokenExpiration,
+            'token_expires_in_minutes' => max(0, $minutesRemaining)
         ]);
     }
 }
