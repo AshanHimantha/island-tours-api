@@ -64,8 +64,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('tours', TourController::class)->except(['index', 'show']);
         Route::put('tours/{id}/status', [TourController::class, 'updateStatus']);
         Route::apiResource('reviews', ReviewController::class)->except(['index', 'store']);
-        Route::put('reviews/{id}/status', [ReviewController::class, 'updateStatus']);
-        Route::get('reviews/all', [ReviewController::class, 'getAllReviews']);
+        Route::get('reviews-all', [ReviewController::class, 'getAllReviews']);
+        Route::put('reviews/{id}/status', [ReviewController::class, 'updateStatus']);      
         Route::apiResource('taxi-requests', RequestTaxiController::class)->except(['store']);
         Route::apiResource('tour-plans', PlanTourController::class)->except(['store']);
 
