@@ -45,6 +45,7 @@ class Taxi extends Model
         'gear_type',
         'passenger_count',
         'cost_per_day',
+        'number_plate',
         'description',
         'display_image',
         'image1',
