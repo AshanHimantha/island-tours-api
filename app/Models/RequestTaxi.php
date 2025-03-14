@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @OA\Schema(
@@ -49,9 +50,9 @@ class RequestTaxi extends Model
     ];
     
     /**
-     * Get the taxi that was requested.
+     * Get the taxi associated with the request.
      */
-    public function taxi()
+    public function taxi(): BelongsTo
     {
         return $this->belongsTo(Taxi::class);
     }

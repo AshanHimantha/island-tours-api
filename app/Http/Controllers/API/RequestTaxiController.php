@@ -51,7 +51,7 @@ class RequestTaxiController extends Controller
      */
     public function index()
     {
-        $requests = RequestTaxi::all();
+        $requests = RequestTaxi::with('taxi')->get();
         return response()->json([
             'status' => 'success',
             'data' => $requests
@@ -137,6 +137,9 @@ class RequestTaxiController extends Controller
         }
 
         $taxiRequest = RequestTaxi::create($request->all());
+        
+        // Load the related taxi after creation
+        $taxiRequest->load('taxi');
 
         return response()->json([
             'status' => 'success',
@@ -191,6 +194,8 @@ class RequestTaxiController extends Controller
      */
     public function show(RequestTaxi $requestTaxi)
     {
+        $requestTaxi->load('taxi');  // Load the taxi relationship
+        
         return response()->json([
             'status' => 'success',
             'data' => $requestTaxi
@@ -286,6 +291,9 @@ class RequestTaxiController extends Controller
         }
 
         $requestTaxi->update($request->all());
+        
+        // Load the related taxi after the update
+        $requestTaxi->load('taxi');
 
         return response()->json([
             'status' => 'success',
