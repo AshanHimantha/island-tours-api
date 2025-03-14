@@ -44,13 +44,13 @@ class Taxi extends Model
         'fuel_type',
         'gear_type',
         'passenger_count',
-        'cost_per_day',
-        'number_plate',
+        'cost_per_day',  
         'description',
         'display_image',
         'image1',
         'image2',
         'image3',
         'status',
+        'number_plate',
     ];
 }

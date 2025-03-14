@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Taxi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -80,7 +82,6 @@ class TaxiController extends Controller
      *                 @OA\Property(property="cost_per_day", type="number", format="float", example=50.00),
      *                 @OA\Property(property="description", type="string", example="Comfortable sedan for family trips"),
      *                 @OA\Property(property="status", type="string", enum={"active", "inactive", "maintenance", "in_tour"}, example="active"),
-     *                 @OA\Property(property="number_plate", type="string", example="ABC-1234"),
      *                 @OA\Property(property="display_image", type="string", format="binary"),
      *                 @OA\Property(property="image1", type="string", format="binary"),
      *                 @OA\Property(property="image2", type="string", format="binary"),
@@ -126,7 +127,6 @@ class TaxiController extends Controller
             'cost_per_day' => 'required|numeric',
             'description' => 'required|string',
             'status' => 'required|string|in:active,inactive,maintenance,in_tour',
-            'number_plate' => 'required|string|max:20|unique:taxis,number_plate',
             'display_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -225,7 +225,6 @@ class TaxiController extends Controller
      *                 @OA\Property(property="cost_per_day", type="number", format="float"),
      *                 @OA\Property(property="description", type="string"),
      *                 @OA\Property(property="status", type="string", enum={"active", "inactive", "maintenance", "in_tour"}),
-     *                 @OA\Property(property="number_plate", type="string"),
      *                 @OA\Property(property="display_image", type="string", format="binary"),
      *                 @OA\Property(property="image1", type="string", format="binary"),
      *                 @OA\Property(property="image2", type="string", format="binary"),
@@ -262,56 +261,83 @@ class TaxiController extends Controller
         $taxi = Taxi::findOrFail($id);
         
         $validator = Validator::make($request->all(), [
-            'title' => 'sometimes|string|max:255',
-            'engine_capacity' => 'sometimes|string|max:50',
-            'kmpl' => 'sometimes|numeric',
-            'fuel_type' => 'sometimes|string|max:50',
-            'gear_type' => 'sometimes|string|max:50',
-            'passenger_count' => 'sometimes|integer|min:1',
-            'cost_per_day' => 'sometimes|numeric',
-            'description' => 'sometimes|string',
-            'status' => 'sometimes|string|in:active,inactive,maintenance,in_tour',
-            'number_plate' => 'sometimes|string|max:20|unique:taxis,number_plate,'.$id,
+            'title' => 'sometimes|required|string|max:255',
+            'engine_capacity' => 'sometimes|required|string|max:50',
+            'kmpl' => 'sometimes|required|numeric',
+            'fuel_type' => 'sometimes|required|string|max:50',
+            'gear_type' => 'sometimes|required|string|max:50',
+            'passenger_count' => 'sometimes|required|integer|min:1',
+            'cost_per_day' => 'sometimes|required|numeric',
+            'description' => 'sometimes|required|string',
+            'status' => 'sometimes|required|string|in:active,inactive,maintenance,in_tour',
+            'number_plate' => 'sometimes|required|string|max:20|unique:taxis,number_plate,' . $id . ',id',
             'display_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        $data = $request->except(['display_image', 'image1', 'image2', 'image3']);
+    
+        // Get only the fillable fields that were sent in the request
+        $data = $request->only([
+            'title', 'engine_capacity', 'kmpl', 'fuel_type', 'gear_type',
+            'passenger_count', 'cost_per_day', 'description', 'status', 'number_plate'
+        ]);
         
-        // Handle display image update
+        // Handle display image if provided
         if ($request->hasFile('display_image')) {
-            // Delete old image if exists
-            if ($taxi->display_image && Storage::disk('public')->exists($taxi->display_image)) {
+            if (!empty($taxi->display_image) && Storage::disk('public')->exists($taxi->display_image)) {
                 Storage::disk('public')->delete($taxi->display_image);
             }
-            
-            $path = $request->file('display_image')->store('taxis', 'public');
-            $data['display_image'] = $path;
+            $data['display_image'] = $request->file('display_image')->store('taxis', 'public');
         }
-        
-        // Handle additional images update
+    
+        // Handle additional images
         foreach (['image1', 'image2', 'image3'] as $image) {
             if ($request->hasFile($image)) {
-                // Delete old image if exists
-                if ($taxi->$image && Storage::disk('public')->exists($taxi->$image)) {
+                if (!empty($taxi->$image) && Storage::disk('public')->exists($taxi->$image)) {
                     Storage::disk('public')->delete($taxi->$image);
                 }
-                
-                $path = $request->file($image)->store('taxis', 'public');
-                $data[$image] = $path;
+                $data[$image] = $request->file($image)->store('taxis', 'public');
             }
         }
-
-        $taxi->update($data);
-
-        return response()->json(['message' => 'Taxi updated successfully', 'data' => $taxi]);
+    
+        Log::info('Updating taxi', [
+            'id' => $id,
+            'updated_fields' => array_keys($data)
+        ]);
+    
+        // Use transactions for data integrity
+        DB::beginTransaction();
+        try {
+            $taxi->fill($data);
+            
+            if ($taxi->isDirty()) {
+                $taxi->save();
+                DB::commit();
+    
+                return response()->json([
+                    'message' => 'Taxi updated successfully',
+                    'data' => $taxi->fresh()
+                ]);
+            } else {
+                DB::rollBack();
+                return response()->json(['message' => 'No changes detected.'], 200);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update taxi', ['id' => $id, 'error' => $e->getMessage()]);
+    
+            return response()->json([
+                'message' => 'Failed to update taxi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+    
 
     /**
      * Update the status of a taxi.

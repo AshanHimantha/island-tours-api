@@ -56,10 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin only routes
     Route::middleware('role:admin')->group(function () {
-
+        Route::post('update-taxi/{id}', [TaxiController::class, 'update']);
         Route::post('/register', [AuthController::class, 'register']);
-        Route::apiResource('taxis', TaxiController::class)->except(['index', 'show']);
-        Route::put('taxis/{id}/status', [TaxiController::class, 'updateStatus']);
+        Route::post('/taxis', [TaxiController::class, 'store']);
         Route::get('/user', [AuthController::class, 'user']);
         Route::apiResource('tours', TourController::class)->except(['index', 'show']);
         Route::put('tours/{id}/status', [TourController::class, 'updateStatus']);
@@ -68,7 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('reviews/{id}/status', [ReviewController::class, 'updateStatus']);      
         Route::apiResource('taxi-requests', RequestTaxiController::class)->except(['store']);
         Route::apiResource('tour-plans', PlanTourController::class)->except(['store']);
-
+       
     });
 
     // Staff and admin routes
