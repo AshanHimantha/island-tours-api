@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\RequestTaxi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -270,6 +271,14 @@ class RequestTaxiController extends Controller
      */
     public function update(Request $request, RequestTaxi $requestTaxi)
     {
+        // Debug incoming data
+        Log::info('Updating taxi request', [
+            'request_id' => $requestTaxi->id,
+            'original_status' => $requestTaxi->status,
+            'new_status' => $request->status,
+            'input' => $request->all()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:255',
             'identification_number' => 'sometimes|string|max:255',
@@ -279,7 +288,7 @@ class RequestTaxiController extends Controller
             'kids_count' => 'nullable|integer|min:0',
             'date_from' => 'sometimes|date',
             'date_to' => 'sometimes|date|after_or_equal:date_from',
-            'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+            'status' => 'sometimes|required|in:pending,confirmed,completed,cancelled', // Changed nullable to required when present
             'taxi_id' => 'sometimes|integer|exists:taxis,id',
         ]);
 
@@ -289,12 +298,31 @@ class RequestTaxiController extends Controller
                 'message' => $validator->errors()
             ], 422);
         }
-
-        $requestTaxi->update($request->all());
         
-        // Load the related taxi after the update
+        // Explicitly set status to ensure it updates
+        if ($request->has('status')) {
+            $requestTaxi->status = $request->status;
+        }
+        
+        // Update other fields
+        $requestTaxi->fill($request->except('status'));
+        
+        // Save the model
+        $requestTaxi->save();
+        
+        // Debug after update
+       Log::info('After update', [
+            'request_id' => $requestTaxi->id,
+            'status_now' => $requestTaxi->status,
+        ]);
+        
+        // Refresh model from database
+        $requestTaxi = $requestTaxi->fresh();
+        
+        // Make sure taxi relationship is loaded even if null
         $requestTaxi->load('taxi');
-
+        
+        // Return full response with taxi data
         return response()->json([
             'status' => 'success',
             'data' => $requestTaxi,
