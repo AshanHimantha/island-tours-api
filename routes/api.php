@@ -34,6 +34,7 @@ Route::post('reviews', [ReviewController::class, 'store']);
 Route::get('reviews/featured/list', [ReviewController::class, 'featured']);
 Route::post('taxi-requests', [RequestTaxiController::class, 'store']);
 Route::post('tour-plans', [PlanTourController::class, 'store']);
+Route::post('contact', [App\Http\Controllers\API\ContactController::class, 'sendEmail']);
 
 Route::get('create-storage-link', function () {
     Artisan::call('storage:link');
