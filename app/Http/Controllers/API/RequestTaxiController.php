@@ -127,7 +127,7 @@ class RequestTaxiController extends Controller
             'date_from' => 'required|date',
             'date_to' => 'required|date|after_or_equal:date_from',
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
-            'taxi_id' => 'required|integer|exists:taxis,id',
+            'taxi_id' => 'required|string|exists:taxis,id',
         ]);
 
         if ($validator->fails()) {
@@ -289,7 +289,7 @@ class RequestTaxiController extends Controller
             'date_from' => 'sometimes|date',
             'date_to' => 'sometimes|date|after_or_equal:date_from',
             'status' => 'sometimes|required|in:pending,confirmed,completed,cancelled', // Changed nullable to required when present
-            'taxi_id' => 'sometimes|integer|exists:taxis,id',
+            'taxi_id' => 'sometimes|string|exists:taxis,id',
         ]);
 
         if ($validator->fails()) {
